@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Reforma Tributária - PEERS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles based on PEERS Brandbook */
+        :root {
+            --peers-blue: #011334;
+            --peers-lime: #E1FF00;
+            --peers-white: #FFFFFF;
+            --peers-light-gray: #F2F2F2;
+            --peers-medium-gray: #E5E7EB;
+            --peers-text-gray: #6b7280;
+            --peers-dark-gray: #374151;
+            --peers-success: #10b981;
+            --peers-danger: #ef4444;
+            --peers-warning: #f59e0b;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--peers-light-gray);
+            line-height: 1.6;
+            color: var(--peers-dark-gray);
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        /* Enhanced Card Styles */
+        .peers-card {
+            background: var(--peers-white);
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 20px rgba(1, 19, 52, 0.08);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .peers-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--peers-lime) 0%, var(--peers-blue) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .peers-card:hover::before {
+            opacity: 1;
+        }
+        
+        /* Header Styles */
+        .peers-header {
+            background: linear-gradient(135deg, var(--peers-blue) 0%, #1a2b5a 100%);
+            color: var(--peers-white);
+            text-align: center;
+            padding: 3rem 1.5rem;
+            border-radius: 1.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .peers-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(225, 255, 0, 0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        .peers-logo {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            margin-bottom: 0.75rem;
+            color: var(--peers-lime);
+            text-shadow: 0 4px 20px rgba(225, 255, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Button Styles */
+        .peers-btn {
+            background: var(--peers-lime);
+            color: var(--peers-blue);
+            font-weight: 600;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(225, 255, 0, 0.3);
+        }
+        
+        .peers-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(1, 19, 52, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .peers-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .peers-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(225, 255, 0, 0.4);
+        }
+        
+        .peers-btn:active {
+            transform: translateY(0);
+        }
+        
+        .peers-btn span {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Input Styles */
+        .peers-input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .peers-input, .peers-select {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            padding-left: 3rem;
+            border: 2px solid var(--peers-medium-gray);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--peers-white);
+        }
+        
+        .peers-input:focus, .peers-select:focus {
+            outline: none;
+            border-color: var(--peers-lime);
+            box-shadow: 0 0 0 4px rgba(225, 255, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .peers-input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--peers-text-gray);
+            pointer-events: none;
+        }
+        
+        .peers-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--peers-blue);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Profile Selection */
+        .profile-option {
+            border: 3px solid var(--peers-medium-gray);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            background: var(--peers-white);
+        }
+        
+        .profile-option::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(225, 255, 0, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+        
+        .profile-option:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .profile-option:hover {
+            border-color: var(--peers-lime);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(1, 19, 52, 0.1);
+        }
+        
+        .profile-option.active {
+            border-color: var(--peers-lime);
+            background: linear-gradient(135deg, rgba(225, 255, 0, 0.05) 0%, rgba(225, 255, 0, 0.1) 100%);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(225, 255, 0, 0.2);
+        }
+        
+        .profile-option.active .profile-icon {
+            background: var(--peers-lime);
+            color: var(--peers-blue);
+        }
+        
+        .profile-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--peers-light-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        /* Results Section */
+        .results-section {
+            background: linear-gradient(135deg, var(--peers-blue) 0%, #1a2b5a 100%);
+            color: var(--peers-white);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .results-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(225, 255, 0, 0.05) 0%, transparent 70%);
+            animation: pulse 6s ease-in-out infinite;
+        }
+        
+        .scenario-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .scenario-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .cost-item:hover {
+            padding-left: 0.5rem;
+        }
+        
+        .cost-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cost-item.total {
+            margin-top: 1rem;
+            padding-top: 1.25rem;
+            border-top: 2px solid var(--peers-lime);
+            font-weight: 600;
+        }
+        
+        /* Value Highlights */
+        .value-highlight {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--peers-lime);
+            text-shadow: 0 2px 10px rgba(225, 255, 0, 0.3);
+        }
+        
+        .positive { 
+            color: var(--peers-success);
+            text-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+        }
+        
+        .negative { 
+            color: var(--peers-danger);
+            text-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--peers-medium-gray);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--peers-lime) 0%, var(--peers-success) 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-fill.warning {
+            background: linear-gradient(90deg, var(--peers-warning) 0%, var(--peers-danger) 100%);
+        }
+        
+        /* Tooltip Styles */
+        .tooltip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            cursor: help;
+        }
+        
+        .tooltip-icon {
+            width: 18px;
+            height: 18px;
+            background: var(--peers-medium-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: var(--peers-dark-gray);
+            transition: all 0.2s ease;
+        }
+        
+        .tooltip:hover .tooltip-icon {
+            background: var(--peers-lime);
+            color: var(--peers-blue);
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 280px;
+            background-color: var(--peers-blue);
+            color: var(--peers-white);
+            text-align: left;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            position: absolute;
+            z-index: 10;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -140px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            box-shadow: 0 10px 30px rgba(1, 19, 52, 0.3);
+        }
+        
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--peers-blue) transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(-5px);
+        }
+        
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--peers-medium-gray);
+            border-radius: 50%;
+            border-top-color: var(--peers-lime);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .peers-card {
+                padding: 1.5rem;
+            }
+            
+            .peers-header {
+                padding: 2rem 1rem;
+            }
+            
+            .peers-logo {
+                font-size: 2.5rem;
+            }
+            
+            .results-section {
+                padding: 2rem 1.5rem;
+            }
+        }
+        
+        /* Smooth transitions for visibility changes */
+        .hidden {
+            display: none !important;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Error States */
+        .input-error {
+            border-color: var(--peers-danger) !important;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        /* Success Message */
+        .success-message {
+            background: linear-gradient(135deg, var(--peers-success) 0%, #059669 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, var(--peers-medium-gray) 50%, transparent 100%);
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="max-w-5xl mx-auto p-5">
+        <!-- Header -->
+        <div class="peers-header">
+            <div class="peers-logo">PEERS</div>
+            <p class="text-sm opacity-90 mb-4">Consulting + Technology</p>
+            <h1 class="text-3xl md:text-4xl font-semibold mb-3">Simulador de Reforma Tributária</h1>
+            <p class="text-base md:text-lg opacity-90 max-w-2xl mx-auto">
+                Descubra como a nova legislação tributária impactará seus custos de transporte e prepare-se para o futuro
+            </p>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div id="progress-indicator" class="peers-card mb-4 hidden">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-sm font-medium" style="color: var(--peers-blue);">Progresso da simulação</span>
+                <span id="progress-text" class="text-sm font-medium" style="color: var(--peers-text-gray);">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Lead Capture Form -->
+        <div id="lead-form" class="peers-card animate-fade-in">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-semibold mb-3" style="color: var(--peers-blue);">
+                    Vamos começar sua simulação
+                </h2>
+                <p class="text-base" style="color: var(--peers-text-gray);">
+                    Seus dados são importantes para personalizarmos a análise
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                <div class="peers-input-group">
+                    <label for="lead-nome" class="peers-label">
+                        Nome completo
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="peers-input-icon">👤</span>
+                        <input type="text" id="lead-nome" class="peers-input" placeholder="João Silva" required>
+                    </div>
+                </div>
+                
+                <div class="peers-input-group">
+                    <label for="lead-empresa" class="peers-label">
+                        Empresa
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="peers-input-icon">🏢</span>
+                        <input type="text" id="lead-empresa" class="peers-input" placeholder="Transportadora ABC" required>
+                    </div>
+                </div>
+                
+                <div class="peers-input-group">
+                    <label for="lead-cargo" class="peers-label">
+                        Cargo
+                    </label>
+                    <div class="relative">
+                        <span class="peers-input-icon">💼</span>
+                        <input type="text" id="lead-cargo" class="peers-input" placeholder="Gerente de Operações">
+                    </div>
+                </div>
+                
+                <div class="peers-input-group">
+                    <label for="lead-email" class="peers-label">
+                        E-mail corporativo
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="peers-input-icon">✉️</span>
+                        <input type="email" id="lead-email" class="peers-input" placeholder="joao@empresa.com" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <button class="peers-btn px-12 py-4 text-lg" onclick="validateLeadAndProceed()">
+                    <span>Iniciar Simulação →</span>
+                </button>
+                <p class="text-xs mt-4" style="color: var(--peers-text-gray);">
+                    Seus dados estão seguros e não serão compartilhados
+                </p>
+            </div>
+        </div>
+
+        <!-- Profile Selector -->
+        <div id="profile-selector" class="peers-card hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-semibold mb-3" style="color: var(--peers-blue);">
+                    Qual é o seu perfil?
+                </h2>
+                <p class="text-base" style="color: var(--peers-text-gray);">
+                    Escolha a opção que melhor descreve sua operação
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                <div class="profile-option p-8 text-center rounded-xl" id="tomador" onclick="selectProfile('tomador')">
+                    <div class="profile-icon">📦</div>
+                    <h3 class="font-semibold text-xl mb-2" style="color: var(--peers-blue);">
+                        Tomador de Frete
+                    </h3>
+                    <p class="text-sm" style="color: var(--peers-text-gray);">
+                        Sua empresa contrata transportadoras para movimentar suas cargas
+                    </p>
+                    <div class="mt-4 text-xs" style="color: var(--peers-text-gray);">
+                        • Indústrias<br>
+                        • Distribuidores<br>
+                        • Varejistas
+                    </div>
+                </div>
+                
+                <div class="profile-option p-8 text-center rounded-xl" id="prestador" onclick="selectProfile('prestador')">
+                    <div class="profile-icon">🚚</div>
+                    <h3 class="font-semibold text-xl mb-2" style="color: var(--peers-blue);">
+                        Prestador de Serviço
+                    </h3>
+                    <p class="text-sm" style="color: var(--peers-text-gray);">
+                        Sua empresa presta serviços de transporte rodoviário de cargas
+                    </p>
+                    <div class="mt-4 text-xs" style="color: var(--peers-text-gray);">
+                        • Transportadoras<br>
+                        • Operadores logísticos<br>
+                        • Autônomos
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prestador Form -->
+        <div id="prestador-form" class="hidden">
+            <div class="peers-card animate-fade-in">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-semibold" style="color: var(--peers-blue);">
+                        Informações Financeiras
+                    </h2>
+                    <button onclick="showExample('prestador')" class="text-sm font-medium" style="color: var(--peers-lime); background: var(--peers-blue); padding: 0.5rem 1rem; border-radius: 0.5rem;">
+                        Ver exemplo
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="peers-input-group">
+                        <label for="receita-bruta" class="peers-label">
+                            Receita Bruta Anual
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltiptext">
+                                    Valor total faturado com prestação de serviços de transporte nos últimos 12 meses, sem deduções
+                                </span>
+                            </div>
+                        </label>
+                        <div class="relative">
+                            <span class="peers-input-icon">R$</span>
+                            <input type="text" id="receita-bruta" class="peers-input" placeholder="0,00" 
+                                   oninput="formatInputCurrency(this)" onfocus="this.select()">
+                        </div>
+                    </div>
+                    
+                    <div class="peers-input-group">
+                        <label for="custos-totais" class="peers-label">
+                            Custos Operacionais Totais
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltiptext">
+                                    Soma de todos os custos diretos e indiretos da operação de transporte, incluindo combustível, manutenção, pessoal, etc.
+                                </span>
+                            </div>
+                        </label>
+                        <div class="relative">
+                            <span class="peers-input-icon">R$</span>
+                            <input type="text" id="custos-totais" class="peers-input" placeholder="0,00" 
+                                   oninput="formatInputCurrency(this)" onfocus="this.select()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="peers-card animate-fade-in" style="animation-delay: 0.1s;">
+                <h3 class="text-xl font-semibold mb-6" style="color: var(--peers-blue);">
+                    Composição dos Custos
+                    <span class="text-sm font-normal ml-2" style="color: var(--peers-text-gray);">
+                        (Distribua o total de 100% entre as categorias)
+                    </span>
+                </h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div>
+                        <label class="peers-label">
+                            <span style="display: inline-block; width: 20px;">⛽</span> Diesel
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltiptext">
+                                    Combustível utilizado na frota. Este é um insumo creditável em ambos os cenários tributários
+                                </span>
+                            </div>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="custo-diesel-range" min="0" max="100" value="35" step="1"
+                                   oninput="updateCostFromRange('diesel')" class="flex-1">
+                            <input type="number" id="custo-diesel" class="w-20 p-2 border rounded text-center" 
+                                   value="35" min="0" max="100" oninput="updateRangeFromInput('diesel')">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="peers-label">
+                            <span style="display: inline-block; width: 20px;">🛣️</span> Pedágio
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltiptext">
+                                    Custos com pedágios nas rodovias. Insumo creditável na reforma tributária
+                                </span>
+                            </div>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="custo-pedagio-range" min="0" max="100" value="6" step="1"
+                                   oninput="updateCostFromRange('pedagio')" class="flex-1">
+                            <input type="number" id="custo-pedagio" class="w-20 p-2 border rounded text-center" 
+                                   value="6" min="0" max="100" oninput="updateRangeFromInput('pedagio')">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="peers-label">
+                            <span style="display: inline-block; width: 20px;">🔧</span> Manutenção
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltiptext">
+                                    Peças, serviços mecânicos e manutenção preventiva. Creditável na reforma
+                                </span>
+                            </div>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="custo-manutencao-range" min="0" max="100" value="6" step="1"
+                                   oninput="updateCostFromRange('manutencao')" class="flex-1">
+                            <input type="number" id="custo-manutencao" class="w-20 p-2 border rounded text-center" 
+                                   value="6" min="0" max="100" oninput="updateRangeFromInput('manutencao')">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="peers-label">
+                            <span style="display: inline-block; width: 20px;">📍</span> Rastreamento/Pneus
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltiptext">
+                                    Sistemas de rastreamento, telemetria e pneus. Creditável na reforma
+                                </span>
+                            </div>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="custo-rastreamento-range" min="0" max="100" value="6" step="1"
+                                   oninput="updateCostFromRange('rastreamento')" class="flex-1">
+                            <input type="number" id="custo-rastreamento" class="w-20 p-2 border rounded text-center" 
+                                   value="6" min="0" max="100" oninput="updateRangeFromInput('rastreamento')">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="peers-label">
+                            <span style="display: inline-block; width: 20px;">👥</span> Mão de obra
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltiptext">
+                                    Salários, benefícios e encargos de motoristas. Não creditável
+                                </span>
+                            </div>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="custo-mao-obra-range" min="0" max="100" value="25" step="1"
+                                   oninput="updateCostFromRange('mao-obra')" class="flex-1">
+                            <input type="number" id="custo-mao-obra" class="w-20 p-2 border rounded text-center" 
+                                   value="25" min="0" max="100" oninput="updateRangeFromInput('mao-obra')">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="peers-label">
+                            <span style="display: inline-block; width: 20px;">📊</span> Depreciação/Seguro
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltiptext">
+                                    Depreciação de veículos e seguros obrigatórios. Não creditável
+                                </span>
+                            </div>
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <input type="range" id="custo-depreciacao-range" min="0" max="100" value="6" step="1"
+                                   oninput="updateCostFromRange('depreciacao')" class="flex-1">
+                            <input type="number" id="custo-depreciacao" class="w-20 p-2 border rounded text-center" 
+                                   value="6" min="0" max="100" oninput="updateRangeFromInput('depreciacao')">
+                            <span>%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 p-4 rounded-xl" style="background: var(--peers-light-gray);">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-medium" style="color: var(--peers-blue);">Total dos custos especificados:</span>
+                        <span id="total-custos-percent" class="text-2xl font-bold" style="color: var(--peers-blue);">84%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="cost-progress-fill" class="progress-fill" style="width: 84%"></div>
+                    </div>
+                    <p id="cost-warning" class="text-sm mt-2 hidden" style="color: var(--peers-danger);">
+                        ⚠️ A soma deve totalizar 100%. O restante será classificado como "Outros custos".
+                    </p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <button class="peers-btn px-12 py-4 text-lg" onclick="calcularPrestador()">
+                    <span>Calcular Impacto →</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tomador Form -->
+        <div id="tomador-form" class="hidden">
+            <div class="peers-card animate-fade-in">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-semibold mb-3" style="color: var(--peers-blue);">
+                        Quanto você gasta com frete?
+                    </h2>
+                    <p class="text-base" style="color: var(--peers-text-gray);">
+                        Informe o valor total anual gasto com contratação de transportadoras
+                    </p>
+                </div>
+                
+                <div class="max-w-md mx-auto">
+                    <div class="peers-input-group">
+                        <label for="custo-frete" class="peers-label text-lg">
+                            Custo Total com Frete (últimos 12 meses)
+                            <div class="tooltip">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltiptext">
+                                    Valor total pago para transportadoras, incluindo frete, seguro de carga e outros custos relacionados ao transporte
+                                </span>
+                            </div>
+                        </label>
+                        <div class="relative">
+                            <span class="peers-input-icon text-xl">R$</span>
+                            <input type="text" id="custo-frete" class="peers-input text-xl py-4 pl-12" 
+                                   placeholder="0,00" oninput="formatInputCurrency(this)" onfocus="this.select()">
+                        </div>
+                        <p class="text-sm mt-2" style="color: var(--peers-text-gray);">
+                            Exemplo: R$ 10.000.000,00
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-8">
+                    <button class="peers-btn px-12 py-4 text-lg" onclick="calcularTomador()">
+                        <span>Calcular Economia →</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultados" class="hidden">
+            <div class="results-section animate-fade-in">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl md:text-4xl font-semibold mb-3">
+                        Análise do Impacto Tributário
+                    </h2>
+                    <p class="text-lg opacity-90">
+                        Comparativo entre o cenário atual e a nova legislação
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="scenario-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold">📋 Cenário Atual</h3>
+                            <span class="text-sm opacity-75">Pré-Reforma</span>
+                        </div>
+                        <div id="pre-reforma-content"></div>
+                    </div>
+                    
+                    <div class="scenario-card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold">🚀 Cenário Futuro</h3>
+                            <span class="text-sm opacity-75">Pós-Reforma</span>
+                        </div>
+                        <div id="pos-reforma-content"></div>
+                    </div>
+                </div>
+                
+                <div class="text-center p-8 rounded-xl" style="background: rgba(225, 255, 0, 0.15);">
+                    <h3 class="text-2xl font-semibold mb-4">💡 Impacto Final</h3>
+                    <div id="impacto-final" class="value-highlight mb-4"></div>
+                    <div id="observacoes" class="text-sm opacity-90"></div>
+                </div>
+                
+                <div class="mt-8 p-6 rounded-xl" style="background: rgba(255, 255, 255, 0.1);">
+                    <h4 class="text-lg font-semibold mb-3">📊 Resumo Executivo</h4>
+                    <div id="resumo-executivo" class="text-sm opacity-90 space-y-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer CTA -->
+        <div id="footer-cta" class="hidden">
+            <div class="peers-card text-center animate-fade-in" 
+                 style="background: linear-gradient(135deg, var(--peers-blue) 0%, #1a2b5a 100%); color: var(--peers-white);">
+                <h3 class="text-2xl font-semibold mb-4">
+                    Quer uma análise mais detalhada?
+                </h3>
+                <p class="mb-6 opacity-90 max-w-2xl mx-auto">
+                    Nossos especialistas podem criar um relatório personalizado com estratégias específicas 
+                    para sua empresa se adaptar à reforma tributária
+                </p>
+                <button class="peers-btn mb-6 px-8 py-4 text-lg" onclick="agendarDiagnostico()">
+                    <span>📈 Solicitar Relatório Completo</span>
+                </button>
+                <div class="divider"></div>
+                <div class="text-sm opacity-80 mt-6">
+                    <p class="mb-2">Simulação baseada em EC 132/2023 e PLP 68/2024</p>
+                    <p><span id="user-email-display"></span> | <span id="user-empresa-display"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let selectedProfile = '';
+        let leadData = {};
+        let currentStep = 0;
+        const totalSteps = 3;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress(0);
+            
+            // Add enter key support for lead form
+            const leadInputs = ['lead-nome', 'lead-empresa', 'lead-cargo', 'lead-email'];
+            leadInputs.forEach((id, index) => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            if (index < leadInputs.length - 1) {
+                                document.getElementById(leadInputs[index + 1]).focus();
+                            } else {
+                                validateLeadAndProceed();
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        // Progress tracking
+        function updateProgress(step) {
+            currentStep = step;
+            const progressPercent = (step / totalSteps) * 100;
+            
+            const progressIndicator = document.getElementById('progress-indicator');
+            const progressFill = document.getElementById('progress-fill');
+            const progressText = document.getElementById('progress-text');
+            
+            if (step > 0) {
+                progressIndicator.classList.remove('hidden');
+                progressFill.style.width = progressPercent + '%';
+                progressText.textContent = Math.round(progressPercent) + '%';
+            }
+        }
+
+        // Currency formatting
+        function formatInputCurrency(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = (parseInt(value) / 100).toFixed(2);
+            value = value.replace('.', ',');
+            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            input.value = value;
+        }
+
+        function parseCurrency(value) {
+            return parseFloat(value.replace(/\./g, '').replace(',', '.')) || 0;
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', { 
+                style: 'currency', 
+                currency: 'BRL',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value);
+        }
+
+        function formatPercentage(value) {
+            return new Intl.NumberFormat('pt-BR', { 
+                style: 'percent', 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2 
+            }).format(value);
+        }
+
+        // Cost sliders management
+        function updateCostFromRange(type) {
+            const rangeValue = document.getElementById(`custo-${type}-range`).value;
+            document.getElementById(`custo-${type}`).value = rangeValue;
+            updateTotalCosts();
+        }
+
+        function updateRangeFromInput(type) {
+            const inputValue = document.getElementById(`custo-${type}`).value;
+            document.getElementById(`custo-${type}-range`).value = inputValue;
+            updateTotalCosts();
+        }
+
+        function updateTotalCosts() {
+            const costs = ['diesel', 'pedagio', 'manutencao', 'rastreamento', 'mao-obra', 'depreciacao'];
+            let total = 0;
+            
+            costs.forEach(cost => {
+                const value = parseFloat(document.getElementById(`custo-${cost}`).value) || 0;
+                total += value;
+            });
+            
+            document.getElementById('total-custos-percent').textContent = total.toFixed(0) + '%';
+            
+            const progressFill = document.getElementById('cost-progress-fill');
+            progressFill.style.width = Math.min(total, 100) + '%';
+            
+            if (total > 100) {
+                progressFill.classList.add('warning');
+                document.getElementById('cost-warning').classList.remove('hidden');
+            } else {
+                progressFill.classList.remove('warning');
+                document.getElementById('cost-warning').classList.add('hidden');
+            }
+            
+            return total;
+        }
+
+        // Lead validation
+        function validateLeadAndProceed() {
+            const nome = document.getElementById('lead-nome').value.trim();
+            const empresa = document.getElementById('lead-empresa').value.trim();
+            const email = document.getElementById('lead-email').value.trim();
+            
+            // Remove previous errors
+            document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+            
+            let hasError = false;
+            
+            if (!nome) {
+                document.getElementById('lead-nome').classList.add('input-error');
+                hasError = true;
+            }
+            
+            if (!empresa) {
+                document.getElementById('lead-empresa').classList.add('input-error');
+                hasError = true;
+            }
+            
+            if (!email) {
+                document.getElementById('lead-email').classList.add('input-error');
+                hasError = true;
+            }
+            
+            if (hasError) {
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('lead-email').classList.add('input-error');
+                alert('Por favor, insira um e-mail válido.');
+                return;
+            }
+            
+            leadData = { 
+                nome, 
+                empresa, 
+                cargo: document.getElementById('lead-cargo').value.trim(), 
+                email 
+            };
+            
+            console.log('Lead capturado:', leadData);
+            
+            // Show success message briefly
+            const leadForm = document.getElementById('lead-form');
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-message';
+            successMsg.innerHTML = '✅ Dados salvos com sucesso!';
+            leadForm.insertBefore(successMsg, leadForm.firstChild);
+            
+            setTimeout(() => {
+                document.getElementById('lead-form').classList.add('hidden');
+                document.getElementById('profile-selector').classList.remove('hidden');
+                document.getElementById('profile-selector').classList.add('fade-in');
+                updateProgress(1);
+            }, 800);
+            
+            document.getElementById('user-email-display').textContent = email;
+            document.getElementById('user-empresa-display').textContent = empresa;
+        }
+
+        // Profile selection
+        function selectProfile(profile) {
+            selectedProfile = profile;
+            
+            document.getElementById('tomador').classList.toggle('active', profile === 'tomador');
+            document.getElementById('prestador').classList.toggle('active', profile === 'prestador');
+            
+            setTimeout(() => {
+                document.getElementById('profile-selector').classList.add('hidden');
+                document.getElementById('prestador-form').classList.toggle('hidden', profile !== 'prestador');
+                document.getElementById('tomador-form').classList.toggle('hidden', profile !== 'tomador');
+                document.getElementById('resultados').classList.add('hidden');
+                document.getElementById('footer-cta').classList.remove('hidden');
+                updateProgress(2);
+            }, 300);
+        }
+
+        // Show example values
+        function showExample(type) {
+            if (type === 'prestador') {
+                document.getElementById('receita-bruta').value = '100.000.000,00';
+                document.getElementById('custos-totais').value = '75.000.000,00';
+            }
+        }
+
+        // Email
+        function agendarDiagnostico() {
+            const subject = encodeURIComponent('Solicitação de Relatório Completo - Reforma Tributária');
+            const body = encodeURIComponent(
+                `Nome: ${leadData.nome}\n` +
+                `Empresa: ${leadData.empresa}\n` +
+                `Cargo: ${leadData.cargo}\n` +
+                `Email: ${leadData.email}\n` +
+                `Perfil: ${selectedProfile === 'tomador' ? 'Tomador de Frete' : 'Prestador de Serviço'}\n\n` +
+                `Gostaria de receber um relatório completo e personalizado sobre como a Reforma Tributária ` +
+                `impactará nossa operação e quais estratégias podemos adotar para nos prepararmos.`
+            );
+            window.location.href = `mailto:contato@peers.com.br?subject=${subject}&body=${body}`;
+        }
+
+        // Calculations
+        function calcularPrestador() {
+            const receitaBrutaStr = document.getElementById('receita-bruta').value;
+            const custosTotaisStr = document.getElementById('custos-totais').value;
+            
+            const receitaBruta = parseCurrency(receitaBrutaStr);
+            const custosTotais = parseCurrency(custosTotaisStr);
+            
+            if (!receitaBruta || !custosTotais) {
+                alert('Por favor, preencha os valores de Receita e Custos.');
+                return;
+            }
+
+            // Validate costs = 100%
+            const totalPercent = updateTotalCosts();
+            if (Math.abs(totalPercent - 100) > 0.1) {
+                alert(`A soma dos percentuais deve ser 100%. Atualmente: ${totalPercent.toFixed(1)}%`);
+                return;
+            }
+
+            // Get cost percentages
+            const custoDiesel = parseFloat(document.getElementById('custo-diesel').value) / 100;
+            const custoPedagio = parseFloat(document.getElementById('custo-pedagio').value) / 100;
+            const custoManutencao = parseFloat(document.getElementById('custo-manutencao').value) / 100;
+            const custoRastreamento = parseFloat(document.getElementById('custo-rastreamento').value) / 100;
+            
+            // Calculate absolute values
+            const valorDiesel = custosTotais * custoDiesel;
+            const valorPedagio = custosTotais * custoPedagio;
+            const valorManutencao = custosTotais * custoManutencao;
+            const valorRastreamento = custosTotais * custoRastreamento;
+            
+            const totalInsumosCreditaveis = valorDiesel + valorPedagio + valorManutencao + valorRastreamento;
+
+            // PRE-REFORM
+            const icmsPre = receitaBruta * 0.12;
+            const pisCofinsPre = custosTotais * 0.0925;
+            const receitaLiquidaPre = receitaBruta - icmsPre - pisCofinsPre;
+            const creditoIcmsDiesel = valorDiesel * 0.171;
+            const creditoPisCofins = totalInsumosCreditaveis * 0.0925;
+            const lucroOperacionalPre = receitaLiquidaPre - custosTotais + creditoIcmsDiesel + creditoPisCofins;
+            const margemPre = receitaBruta > 0 ? lucroOperacionalPre / receitaBruta : 0;
+
+            // POST-REFORM
+            const ibsPos = receitaBruta * 0.177;
+            const cbsPos = custosTotais * 0.088;
+            const receitaLiquidaPos = receitaBruta - ibsPos - cbsPos;
+            const creditoIbsInsumos = totalInsumosCreditaveis * 0.177;
+            const creditoCbsInsumos = totalInsumosCreditaveis * 0.088;
+            const lucroOperacionalPos = receitaLiquidaPos - custosTotais + creditoIbsInsumos + creditoCbsInsumos;
+            const margemPos = receitaBruta > 0 ? lucroOperacionalPos / receitaBruta : 0;
+            
+            const diferencaLucro = lucroOperacionalPos - lucroOperacionalPre;
+            const diferencaPercentual = ((lucroOperacionalPos / lucroOperacionalPre) - 1) * 100;
+
+            // Calculate breakeven adjustment
+            const lucroAlvo = lucroOperacionalPre;
+            const aliquotaCombinada = 0.171 + 0.088;
+            const receitaNecessaria = (custosTotais - creditoIbsInsumos - creditoCbsInsumos + lucroAlvo) / (1 - aliquotaCombinada);
+            const reajusteNecessario = (receitaNecessaria / receitaBruta) - 1;
+
+            // Render Results
+            document.getElementById('pre-reforma-content').innerHTML = `
+                <div class="cost-item"><span>Receita Bruta:</span><span>${formatCurrency(receitaBruta)}</span></div>
+                <div class="cost-item"><span>(-) ICMS (12%):</span><span class="text-red-400">${formatCurrency(icmsPre)}</span></div>
+                <div class="cost-item"><span>(-) PIS/COFINS (9,25%):</span><span class="text-red-400">${formatCurrency(pisCofinsPre)}</span></div>
+                <div class="cost-item"><span>= Receita Líquida:</span><span>${formatCurrency(receitaLiquidaPre)}</span></div>
+                <div class="cost-item"><span>(-) Custos Operacionais:</span><span class="text-red-400">${formatCurrency(custosTotais)}</span></div>
+                <div class="cost-item"><span>(+) Crédito ICMS Diesel:</span><span class="text-green-400">${formatCurrency(creditoIcmsDiesel)}</span></div>
+                <div class="cost-item"><span>(+) Crédito PIS/COFINS:</span><span class="text-green-400">${formatCurrency(creditoPisCofins)}</span></div>
+                <div class="cost-item total"><span>= Lucro Operacional:</span><span class="text-xl">${formatCurrency(lucroOperacionalPre)}</span></div>
+                <div class="cost-item"><span>Margem Operacional:</span><span>${formatPercentage(margemPre)}</span></div>
+            `;
+
+            document.getElementById('pos-reforma-content').innerHTML = `
+                <div class="cost-item"><span>Receita Bruta:</span><span>${formatCurrency(receitaBruta)}</span></div>
+                <div class="cost-item"><span>(-) IBS (17,7%):</span><span class="text-red-400">${formatCurrency(ibsPos)}</span></div>
+                <div class="cost-item"><span>(-) CBS (8,8%):</span><span class="text-red-400">${formatCurrency(cbsPos)}</span></div>
+                <div class="cost-item"><span>= Receita Líquida:</span><span>${formatCurrency(receitaLiquidaPos)}</span></div>
+                <div class="cost-item"><span>(-) Custos Operacionais:</span><span class="text-red-400">${formatCurrency(custosTotais)}</span></div>
+                <div class="cost-item"><span>(+) Crédito IBS Insumos:</span><span class="text-green-400">${formatCurrency(creditoIbsInsumos)}</span></div>
+                <div class="cost-item"><span>(+) Crédito CBS Insumos:</span><span class="text-green-400">${formatCurrency(creditoCbsInsumos)}</span></div>
+                <div class="cost-item total"><span>= Lucro Operacional:</span><span class="text-xl">${formatCurrency(lucroOperacionalPos)}</span></div>
+                <div class="cost-item"><span>Margem Operacional:</span><span>${formatPercentage(margemPos)}</span></div>
+            `;
+
+            const impactoClass = diferencaLucro >= 0 ? 'positive' : 'negative';
+            const impactoIcon = diferencaLucro >= 0 ? '📈' : '📉';
+            
+            document.getElementById('impacto-final').innerHTML = `
+                <div class="${impactoClass}">
+                    ${impactoIcon} Sua margem operacional ${diferencaLucro >= 0 ? 'aumentará' : 'reduzirá'} em ${formatCurrency(Math.abs(diferencaLucro))}
+                </div>
+                <div class="text-base mt-3 font-normal" style="color: var(--peers-white);">
+                    Isso representa uma variação de ${diferencaPercentual > 0 ? '+' : ''}${diferencaPercentual.toFixed(1)}% no lucro operacional
+                </div>
+                ${diferencaLucro < 0 ? `
+                <div class="text-base mt-4 font-normal" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
+                    💡 Para manter o mesmo lucro operacional, seria necessário um reajuste de ${formatPercentage(reajusteNecessario)} nos preços
+                </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('observacoes').innerHTML = `
+                * Simulação considerando regime tributário de Lucro Real<br>
+                * Créditos calculados sobre ${formatPercentage(totalInsumosCreditaveis/custosTotais)} dos custos totais
+            `;
+            
+            document.getElementById('resumo-executivo').innerHTML = `
+                <div>• <strong>Carga tributária atual:</strong> ${formatPercentage((icmsPre + pisCofinsPre) / receitaBruta)} da receita bruta</div>
+                <div>• <strong>Carga tributária futura:</strong> ${formatPercentage((ibsPos + cbsPos) / receitaBruta)} da receita bruta</div>
+                <div>• <strong>Créditos recuperáveis aumentam:</strong> de ${formatCurrency(creditoIcmsDiesel + creditoPisCofins)} para ${formatCurrency(creditoIbsInsumos + creditoCbsInsumos)}</div>
+                <div>• <strong>Recomendação:</strong> ${diferencaLucro < 0 ? 'Revisar estrutura de custos e negociar reajustes contratuais' : 'Aproveitar a melhoria de margem para investir em competitividade'}</div>
+            `;
+            
+            document.getElementById('resultados').classList.remove('hidden');
+            document.getElementById('resultados').classList.add('fade-in');
+            updateProgress(3);
+            
+            // Scroll to results
+            document.getElementById('resultados').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function calcularTomador() {
+            const custoFreteStr = document.getElementById('custo-frete').value;
+            const custoFrete = parseCurrency(custoFreteStr);
+            
+            if (!custoFrete) {
+                document.getElementById('custo-frete').classList.add('input-error');
+                return;
+            }
+
+            // PRE-REFORM
+            const creditoIcmsPre = custoFrete * 0.024;
+            const creditoPisCofinsPre = custoFrete * 0.0925;
+            const custoEfetivoPre = custoFrete - creditoIcmsPre - creditoPisCofinsPre;
+
+            // POST-REFORM
+            const creditoIbsPos = custoFrete * 0.177;
+            const creditoCbsPos = custoFrete * 0.088;
+            const custoEfetivoPos = custoFrete - creditoIbsPos - creditoCbsPos;
+
+            const diferencaCusto = custoEfetivoPos - custoEfetivoPre;
+            const economiaPercentual = (1 - (custoEfetivoPos / custoEfetivoPre)) * 100;
+            
+            // With 6.2% adjustment
+            const custoFreteReajustado = custoFrete * 1.062;
+            const creditoIbsReajustado = custoFreteReajustado * 0.177;
+            const creditoCbsReajustado = custoFreteReajustado * 0.088;
+            const custoEfetivoReajustado = custoFreteReajustado - creditoIbsReajustado - creditoCbsReajustado;
+
+            // Render Results
+            document.getElementById('pre-reforma-content').innerHTML = `
+                <div class="cost-item"><span>Custo contratado:</span><span>${formatCurrency(custoFrete)}</span></div>
+                <div class="cost-item"><span>(-) Crédito ICMS (2,4%):</span><span class="text-green-400">${formatCurrency(creditoIcmsPre)}</span></div>
+                <div class="cost-item"><span>(-) Crédito PIS/COFINS (9,25%):</span><span class="text-green-400">${formatCurrency(creditoPisCofinsPre)}</span></div>
+                <div class="cost-item total"><span>= Custo Efetivo:</span><span class="text-xl">${formatCurrency(custoEfetivoPre)}</span></div>
+                <div class="cost-item"><span>Créditos recuperados:</span><span>${formatPercentage((creditoIcmsPre + creditoPisCofinsPre) / custoFrete)}</span></div>
+            `;
+
+            document.getElementById('pos-reforma-content').innerHTML = `
+                <div class="cost-item"><span>Custo contratado:</span><span>${formatCurrency(custoFrete)}</span></div>
+                <div class="cost-item"><span>(-) Crédito IBS (17,7%):</span><span class="text-green-400">${formatCurrency(creditoIbsPos)}</span></div>
+                <div class="cost-item"><span>(-) Crédito CBS (8,8%):</span><span class="text-green-400">${formatCurrency(creditoCbsPos)}</span></div>
+                <div class="cost-item total"><span>= Custo Efetivo:</span><span class="text-xl">${formatCurrency(custoEfetivoPos)}</span></div>
+                <div class="cost-item"><span>Créditos recuperados:</span><span>${formatPercentage((creditoIbsPos + creditoCbsPos) / custoFrete)}</span></div>
+            `;
+
+            const impactoClass = diferencaCusto < 0 ? 'positive' : 'negative';
+            const impactoIcon = diferencaCusto < 0 ? '💰' : '💸';
+            
+            document.getElementById('impacto-final').innerHTML = `
+                <div class="${impactoClass}">
+                    ${impactoIcon} Seu custo efetivo ${diferencaCusto < 0 ? 'reduzirá' : 'aumentará'} em ${formatCurrency(Math.abs(diferencaCusto))}
+                </div>
+                <div class="text-base mt-3 font-normal" style="color: var(--peers-white);">
+                    Isso representa uma economia de ${economiaPercentual.toFixed(1)}% no custo líquido com fretes
+                </div>
+                <div class="text-base mt-4 font-normal" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
+                    ⚠️ <strong>Atenção:</strong> O transportador poderá propor reajuste de até 6,2% para manter sua margem operacional
+                </div>
+            `;
+            
+            document.getElementById('observacoes').innerHTML = `
+                * Crédito ICMS calculado como média de mercado (20% do ICMS destacado)<br>
+                * Simulação considerando regime de Lucro Real<br>
+                * Na reforma, os créditos são integrais sobre o valor do serviço
+            `;
+            
+            document.getElementById('resumo-executivo').innerHTML = `
+                <div>• <strong>Economia inicial:</strong> ${formatCurrency(Math.abs(diferencaCusto))} por ano (${economiaPercentual.toFixed(1)}%)</div>
+                <div>• <strong>Créditos atuais:</strong> ${formatCurrency(creditoIcmsPre + creditoPisCofinsPre)} (${formatPercentage((creditoIcmsPre + creditoPisCofinsPre) / custoFrete)})</div>
+                <div>• <strong>Créditos futuros:</strong> ${formatCurrency(creditoIbsPos + creditoCbsPos)} (${formatPercentage((creditoIbsPos + creditoCbsPos) / custoFrete)})</div>
+                <div>• <strong>Cenário com reajuste de 6,2%:</strong> Custo efetivo seria ${formatCurrency(custoEfetivoReajustado)} (${custoEfetivoReajustado > custoEfetivoPre ? 'aumento' : 'redução'} de ${formatCurrency(Math.abs(custoEfetivoReajustado - custoEfetivoPre))})</div>
+                <div>• <strong>Recomendação:</strong> Negociar contratos de longo prazo antes da reforma e preparar-se para renegociações</div>
+            `;
+            
+            document.getElementById('resultados').classList.remove('hidden');
+            document.getElementById('resultados').classList.add('fade-in');
+            updateProgress(3);
+            
+            // Scroll to results
+            document.getElementById('resultados').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Enhanced keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                // Reset to initial state
+                const sections = ['lead-form', 'profile-selector', 'prestador-form', 'tomador-form', 'resultados', 'footer-cta'];
+                sections.forEach(id => {
+                    if (id === 'lead-form') {
+                        document.getElementById(id).classList.remove('hidden');
+                    } else {
+                        document.getElementById(id).classList.add('hidden');
+                    }
+                });
+                updateProgress(0);
+            }
+        });
+
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Auto-save form data
+        function autoSaveFormData() {
+            const formData = {
+                receitaBruta: document.getElementById('receita-bruta')?.value,
+                custosTotais: document.getElementById('custos-totais')?.value,
+                custoFrete: document.getElementById('custo-frete')?.value,
+                custos: {
+                    diesel: document.getElementById('custo-diesel')?.value,
+                    pedagio: document.getElementById('custo-pedagio')?.value,
+                    manutencao: document.getElementById('custo-manutencao')?.value,
+                    rastreamento: document.getElementById('custo-rastreamento')?.value,
+                    maoObra: document.getElementById('custo-mao-obra')?.value,
+                    depreciacao: document.getElementById('custo-depreciacao')?.value
+                }
+            };
+            sessionStorage.setItem('simuladorFormData', JSON.stringify(formData));
+        }
+
+        // Restore form data
+        function restoreFormData() {
+            const savedData = sessionStorage.getItem('simuladorFormData');
+            if (savedData) {
+                const formData = JSON.parse(savedData);
+                if (formData.receitaBruta) document.getElementById('receita-bruta').value = formData.receitaBruta;
+                if (formData.custosTotais) document.getElementById('custos-totais').value = formData.custosTotais;
+                if (formData.custoFrete) document.getElementById('custo-frete').value = formData.custoFrete;
+                
+                if (formData.custos) {
+                    Object.keys(formData.custos).forEach(key => {
+                        const input = document.getElementById(`custo-${key}`);
+                        const range = document.getElementById(`custo-${key}-range`);
+                        if (input && formData.custos[key]) {
+                            input.value = formData.custos[key];
+                            if (range) range.value = formData.custos[key];
+                        }
+                    });
+                    updateTotalCosts();
+                }
+            }
+        }
+
+        // Call restore on page load
+        window.addEventListener('load', restoreFormData);
+
+        // Save data on input
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('input')) {
+                autoSaveFormData();
+            }
+        });
+
+        // Print results functionality
+        function printResults() {
+            window.print();
+        }
+
+        // Add print styles
+        const printStyles = document.createElement('style');
+        printStyles.textContent = `
+            @media print {
+                body { background: white; }
+                .peers-btn, #progress-indicator { display: none !important; }
+                .peers-card, .results-section { 
+                    box-shadow: none !important; 
+                    page-break-inside: avoid;
+                }
+                .hidden { display: none !important; }
+            }
+        `;
+        document.head.appendChild(printStyles);
+    </script>
+</body>
+</html>
